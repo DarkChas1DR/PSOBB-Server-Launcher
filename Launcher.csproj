@@ -9,4 +9,10 @@
     <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 
+  <!-- Automatically copy the single-file published Launcher.exe to the live Launcher folder -->
+  <Target Name="CopyPublishedExe" AfterTargets="Publish">
+    <Copy SourceFiles="$(PublishDir)Launcher.exe" DestinationFolder="$(ProjectDir)..\..\Launcher" SkipUnchangedFiles="false" />
+    <Message Importance="High" Text="--> Automatically copied published Launcher.exe to live Launcher folder!" />
+  </Target>
+
 </Project>
