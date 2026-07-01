@@ -1,0 +1,576 @@
+<Window x:Class="Launcher.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Launcher"
+        mc:Ignorable="d"
+        Title="Pioneer II - Server Launcher" Height="680" Width="980"
+        Background="#121216" Foreground="#E0E0E0"
+        WindowStartupLocation="CenterScreen" SnapsToDevicePixels="True"
+        FontFamily="Segoe UI, Inter, Arial">
+
+    <Window.Resources>
+        <!-- Modern Dark Theme Color Palette -->
+        <SolidColorBrush x:Key="BgDark" Color="#121216" />
+        <SolidColorBrush x:Key="BgCard" Color="#1C1C24" />
+        <SolidColorBrush x:Key="BgConsole" Color="#0B0B0E" />
+        <SolidColorBrush x:Key="BorderBrush" Color="#2A2A38" />
+        <SolidColorBrush x:Key="TextPrimary" Color="#FFFFFF" />
+        <SolidColorBrush x:Key="TextSecondary" Color="#9A9AA6" />
+        
+        <!-- Accents -->
+        <SolidColorBrush x:Key="AccentCyan" Color="#00D2FF" />
+        <SolidColorBrush x:Key="AccentGreen" Color="#00FF88" />
+        <SolidColorBrush x:Key="AccentRed" Color="#FF3366" />
+        <SolidColorBrush x:Key="AccentOrange" Color="#FF9F43" />
+        
+        <LinearGradientBrush x:Key="GlowCyan" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#00D2FF" Offset="0"/>
+            <GradientStop Color="#0072FF" Offset="1"/>
+        </LinearGradientBrush>
+
+        <!-- Custom ScrollBar Styling -->
+        <Style x:Key="ModernScrollThumbs" TargetType="{x:Type Thumb}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Thumb}">
+                        <Grid x:Name="Grid">
+                            <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto" 
+                                       Fill="#3E3E50" RadiusX="4" RadiusY="4" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter TargetName="Grid" Property="Background" Value="#55556F" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Button Style -->
+        <Style x:Key="ModernButton" TargetType="Button">
+            <Setter Property="Background" Value="#2A2A38" />
+            <Setter Property="Foreground" Value="#E0E0E0" />
+            <Setter Property="BorderBrush" Value="#3A3A4A" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="15,8" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" CornerRadius="4" Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" 
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#38384A" />
+                                <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource AccentCyan}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#1C1C24" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="border" Property="Background" Value="#1A1A22" />
+                                <Setter TargetName="border" Property="BorderBrush" Value="#222" />
+                                <Setter Property="Foreground" Value="#5E5E6E" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Start Button (Green Accent) -->
+        <Style x:Key="StartButton" TargetType="Button" BasedOn="{StaticResource ModernButton}">
+            <Setter Property="Background" Value="#1E3E2F" />
+            <Setter Property="BorderBrush" Value="#28553F" />
+            <Setter Property="Foreground" Value="#00FF88" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" CornerRadius="4" Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" 
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#254E3A" />
+                                <Setter TargetName="border" Property="BorderBrush" Value="#32C07D" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#12251D" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Stop Button (Red Accent) -->
+        <Style x:Key="StopButton" TargetType="Button" BasedOn="{StaticResource ModernButton}">
+            <Setter Property="Background" Value="#3E1E25" />
+            <Setter Property="BorderBrush" Value="#552832" />
+            <Setter Property="Foreground" Value="#FF4D6A" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" CornerRadius="4" Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" 
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#4E252E" />
+                                <Setter TargetName="border" Property="BorderBrush" Value="#C0324E" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#251216" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Flat Tab Control Template -->
+        <Style TargetType="TabItem">
+            <Setter Property="HeaderTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <ContentPresenter Content="{Binding}" Margin="12,6" />
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Border x:Name="Border" BorderThickness="0,0,0,3" BorderBrush="Transparent" Margin="0,0,10,0" Padding="10,6">
+                            <ContentPresenter x:Name="ContentSite" ContentSource="Header" RecognizesAccessKey="True" 
+                                              HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource AccentCyan}" />
+                                <Setter Property="Foreground" Value="#00D2FF" />
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="False">
+                                <Setter Property="Foreground" Value="#8A8A9A" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Foreground" Value="#FFFFFF" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <!-- Header Row -->
+            <RowDefinition Height="Auto" />
+            <!-- Main Tabs Content -->
+            <RowDefinition Height="*" />
+            <!-- Status Footer -->
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- HEADER SECTION -->
+        <Grid Grid.Row="0" Margin="0,0,0,15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Title -->
+            <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                <TextBlock Text="PIONEER II" FontSize="11" FontWeight="Bold" Foreground="{StaticResource AccentCyan}" />
+                <TextBlock Text="SERVER DASHBOARD" FontSize="24" FontWeight="Bold" Foreground="{StaticResource TextPrimary}" />
+            </StackPanel>
+
+            <!-- Global Action Buttons -->
+            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                <Button x:Name="BtnBackupNow" Content="CREATE BACKUP" Style="{StaticResource ModernButton}" Margin="0,0,10,0" Click="BtnBackupNow_Click" />
+                <Button x:Name="BtnStartAll" Content="START ALL" Style="{StaticResource StartButton}" Margin="0,0,10,0" Click="BtnStartAll_Click" />
+                <Button x:Name="BtnStopAll" Content="STOP ALL" Style="{StaticResource StopButton}" Click="BtnStopAll_Click" />
+            </StackPanel>
+        </Grid>
+
+        <!-- MAIN TAB SECTION -->
+        <TabControl Grid.Row="1" Background="Transparent" BorderThickness="0" Margin="0,5">
+            <!-- DASHBOARD TAB -->
+            <TabItem Header="DASHBOARD">
+                <Grid Margin="0,15,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- NEWSERV CARD -->
+                    <Border x:Name="BorderNewserv" Grid.Column="0" Background="{StaticResource BgCard}" BorderBrush="{StaticResource BorderBrush}" 
+                            BorderThickness="1" CornerRadius="8" Margin="0,0,10,0" Padding="20">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <!-- Header -->
+                            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,15">
+                                <Ellipse x:Name="IndicatorNewserv" Width="12" Height="12" Fill="{StaticResource AccentRed}" Margin="0,0,10,0" />
+                                <TextBlock Text="newserv Server Emulator" FontSize="16" FontWeight="Bold" Foreground="{StaticResource TextPrimary}" />
+                            </StackPanel>
+
+                            <!-- Info / Stats -->
+                            <StackPanel Grid.Row="1" VerticalAlignment="Top" Margin="0,10">
+                                <Grid Margin="0,5">
+                                    <TextBlock Text="Status:" Foreground="{StaticResource TextSecondary}" />
+                                    <TextBlock x:Name="TxtNewservStatus" Text="Stopped" Foreground="{StaticResource AccentRed}" FontWeight="Bold" HorizontalAlignment="Right" />
+                                </Grid>
+                                <Grid Margin="0,5">
+                                    <TextBlock Text="Working Dir:" Foreground="{StaticResource TextSecondary}" />
+                                    <TextBlock x:Name="TxtNewservDir" Text="d:\...\PhantasyStarOnlineServer" ToolTip="{Binding Text, ElementName=TxtNewservDir}" Foreground="{StaticResource TextPrimary}" HorizontalAlignment="Right" MaxWidth="220" TextTrimming="CharacterEllipsis" />
+                                </Grid>
+                                <Grid Margin="0,5">
+                                    <TextBlock Text="Auto-Restart:" Foreground="{StaticResource TextSecondary}" />
+                                    <TextBlock Text="Enabled" Foreground="{StaticResource AccentCyan}" HorizontalAlignment="Right" />
+                                </Grid>
+                            </StackPanel>
+
+                            <!-- Controls -->
+                            <Grid Grid.Row="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Button x:Name="BtnStartNewserv" Grid.Column="0" Content="Start" Style="{StaticResource StartButton}" Margin="0,0,5,0" Click="BtnStartNewserv_Click" />
+                                <Button x:Name="BtnStopNewserv" Grid.Column="1" Content="Stop" Style="{StaticResource StopButton}" Margin="5,0,0,0" Click="BtnStopNewserv_Click" />
+                            </Grid>
+                        </Grid>
+                    </Border>
+
+                    <!-- PHP CRONS CARD -->
+                    <Border x:Name="BorderCrons" Grid.Column="1" Background="{StaticResource BgCard}" BorderBrush="{StaticResource BorderBrush}" 
+                            BorderThickness="1" CornerRadius="8" Margin="10,0,0,0" Padding="20">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <!-- Header -->
+                            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,15">
+                                <Ellipse x:Name="IndicatorCrons" Width="12" Height="12" Fill="{StaticResource AccentRed}" Margin="0,0,10,0" />
+                                <TextBlock Text="PHP Cron Runner" FontSize="16" FontWeight="Bold" Foreground="{StaticResource TextPrimary}" />
+                            </StackPanel>
+
+                            <!-- Info / Stats -->
+                            <StackPanel Grid.Row="1" VerticalAlignment="Top" Margin="0,10">
+                                <Grid Margin="0,5">
+                                    <TextBlock Text="Status:" Foreground="{StaticResource TextSecondary}" />
+                                    <TextBlock x:Name="TxtCronsStatus" Text="Stopped" Foreground="{StaticResource AccentRed}" FontWeight="Bold" HorizontalAlignment="Right" />
+                                </Grid>
+                                <Grid Margin="0,5">
+                                    <TextBlock Text="Interval:" Foreground="{StaticResource TextSecondary}" />
+                                    <TextBlock x:Name="TxtCronInterval" Text="5 seconds" Foreground="{StaticResource TextPrimary}" HorizontalAlignment="Right" />
+                                </Grid>
+                                <Grid Margin="0,5">
+                                    <TextBlock Text="Run Mode:" Foreground="{StaticResource TextSecondary}" />
+                                    <TextBlock x:Name="TxtCronMode" Text="Direct C# (Background)" Foreground="{StaticResource AccentCyan}" HorizontalAlignment="Right" />
+                                </Grid>
+                            </StackPanel>
+
+                            <!-- Controls -->
+                            <Grid Grid.Row="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Button x:Name="BtnStartCrons" Grid.Column="0" Content="Start" Style="{StaticResource StartButton}" Margin="0,0,5,0" Click="BtnStartCrons_Click" />
+                                <Button x:Name="BtnStopCrons" Grid.Column="1" Content="Stop" Style="{StaticResource StopButton}" Margin="5,0,0,0" Click="BtnStopCrons_Click" />
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </TabItem>
+
+            <!-- NEWSERV LOGS TAB -->
+            <TabItem Header="NEWSERV LOGS">
+                <Grid Margin="0,10,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <TextBox x:Name="TxtNewservLog" Grid.Row="0" Background="{StaticResource BgConsole}" Foreground="#CCCCCC" 
+                             BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" 
+                             FontFamily="Consolas, Courier New" FontSize="12.5" IsReadOnly="True" 
+                             VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
+                             AcceptsReturn="True" TextWrapping="Wrap" Padding="8" />
+
+                    <!-- Log controls -->
+                    <Grid Grid.Row="1" Margin="0,8,0,0">
+                        <CheckBox x:Name="ChkNewservScroll" Content="Auto-scroll" IsChecked="True" Foreground="{StaticResource TextSecondary}" VerticalAlignment="Center" />
+                        <Button x:Name="BtnClearNewservLog" Content="Clear Logs" Style="{StaticResource ModernButton}" HorizontalAlignment="Right" Click="BtnClearNewservLog_Click" Padding="10,5" />
+                    </Grid>
+                </Grid>
+            </TabItem>
+
+            <!-- CRON LOGS TAB -->
+            <TabItem Header="CRON LOGS">
+                <Grid Margin="0,10,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <TextBox x:Name="TxtCronLog" Grid.Row="0" Background="{StaticResource BgConsole}" Foreground="#CCCCCC" 
+                             BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" 
+                             FontFamily="Consolas, Courier New" FontSize="12.5" IsReadOnly="True" 
+                             VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
+                             AcceptsReturn="True" TextWrapping="Wrap" Padding="8" />
+
+                    <!-- Log controls -->
+                    <Grid Grid.Row="1" Margin="0,8,0,0">
+                        <CheckBox x:Name="ChkCronScroll" Content="Auto-scroll" IsChecked="True" Foreground="{StaticResource TextSecondary}" VerticalAlignment="Center" />
+                        <Button x:Name="BtnClearCronLog" Content="Clear Logs" Style="{StaticResource ModernButton}" HorizontalAlignment="Right" Click="BtnClearCronLog_Click" Padding="10,5" />
+                    </Grid>
+                </Grid>
+            </TabItem>
+
+            <!-- SERVER CONFIG TAB -->
+            <TabItem Header="SERVER CONFIG">
+                <ScrollViewer Margin="0,15,0,0" VerticalScrollBarVisibility="Auto">
+                    <StackPanel MaxWidth="800" HorizontalAlignment="Left" Margin="10,0">
+                        <!-- Server Identity -->
+                        <TextBlock Text="SERVER IDENTITY" FontSize="12" FontWeight="Bold" Foreground="{StaticResource AccentCyan}" Margin="0,0,0,8" />
+                        <Border Background="{StaticResource BgCard}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="6" Padding="15" Margin="0,0,0,20">
+                            <StackPanel>
+                                <Grid Margin="0,5">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" Text="Server Name:" Foreground="{StaticResource TextSecondary}" Margin="0,0,0,5" />
+                                    <TextBox x:Name="TxtCfgServerName" Grid.Row="1" Background="#121216" Foreground="#FFF" BorderBrush="{StaticResource BorderBrush}" Padding="6,4" />
+                                </Grid>
+                                <Grid Margin="0,10,0,5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                                        <TextBlock Text="Local IP Address:" Foreground="{StaticResource TextSecondary}" Margin="0,0,0,5" />
+                                        <TextBox x:Name="TxtCfgLocalAddress" Background="#121216" Foreground="#FFF" BorderBrush="{StaticResource BorderBrush}" Padding="6,4" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                                        <TextBlock Text="External IP Address:" Foreground="{StaticResource TextSecondary}" Margin="0,0,0,5" />
+                                        <TextBox x:Name="TxtCfgExternalAddress" Background="#121216" Foreground="#FFF" BorderBrush="{StaticResource BorderBrush}" Padding="6,4" />
+                                    </StackPanel>
+                                </Grid>
+                                <Grid Margin="0,10,0,5">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" Text="Lobby Welcome Message:" Foreground="{StaticResource TextSecondary}" Margin="0,0,0,5" />
+                                    <TextBox x:Name="TxtCfgWelcomeMessage" Grid.Row="1" Background="#121216" Foreground="#FFF" BorderBrush="{StaticResource BorderBrush}" Padding="6,4" AcceptsReturn="True" TextWrapping="Wrap" Height="100" VerticalScrollBarVisibility="Auto" />
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Boost Rates -->
+                        <TextBlock Text="GAMEPLAY BOOST RATES (MULTIPLIERS)" FontSize="12" FontWeight="Bold" Foreground="{StaticResource AccentCyan}" Margin="0,0,0,8" />
+                        <Border Background="{StaticResource BgCard}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="6" Padding="15" Margin="0,0,0,20">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                
+                                <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,5,10,10">
+                                    <TextBlock Text="Experience (EXP) Boost Multiplier:" Foreground="{StaticResource TextSecondary}" Margin="0,0,0,5" />
+                                    <TextBox x:Name="TxtCfgExpMultiplier" Background="#121216" Foreground="#FFF" BorderBrush="{StaticResource BorderBrush}" Padding="6,4" />
+                                </StackPanel>
+                                <StackPanel Grid.Row="0" Grid.Column="1" Margin="10,5,0,10">
+                                    <TextBlock Text="Drop Rate (DAR) Boost Multiplier:" Foreground="{StaticResource TextSecondary}" Margin="0,0,0,5" />
+                                    <TextBox x:Name="TxtCfgDarMultiplier" Background="#121216" Foreground="#FFF" BorderBrush="{StaticResource BorderBrush}" Padding="6,4" />
+                                </StackPanel>
+                                <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,10,10,5">
+                                    <TextBlock Text="Rare Drop (RDR) Boost Multiplier:" Foreground="{StaticResource TextSecondary}" Margin="0,0,0,5" />
+                                    <TextBox x:Name="TxtCfgRdrMultiplier" Background="#121216" Foreground="#FFF" BorderBrush="{StaticResource BorderBrush}" Padding="6,4" />
+                                </StackPanel>
+                                <StackPanel Grid.Row="1" Grid.Column="1" Margin="10,10,0,5">
+                                    <TextBlock Text="Rare Monster Boost Multiplier:" Foreground="{StaticResource TextSecondary}" Margin="0,0,0,5" />
+                                    <TextBox x:Name="TxtCfgRareMonsterMultiplier" Background="#121216" Foreground="#FFF" BorderBrush="{StaticResource BorderBrush}" Padding="6,4" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <!-- Policies -->
+                        <TextBlock Text="SERVER RULES &amp; POLICIES" FontSize="12" FontWeight="Bold" Foreground="{StaticResource AccentCyan}" Margin="0,0,0,8" />
+                        <Border Background="{StaticResource BgCard}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="6" Padding="15" Margin="0,0,0,20">
+                            <StackPanel>
+                                <CheckBox x:Name="ChkCfgAllowUnregistered" Content="Allow unregistered players (Auto-create account on login)" Foreground="{StaticResource TextPrimary}" Margin="0,0,0,10" />
+                                <CheckBox x:Name="ChkCfgAllowConcurrent" Content="Allow concurrent logins on the same account" Foreground="{StaticResource TextPrimary}" Margin="0,0,0,10" />
+                                <CheckBox x:Name="ChkCfgChatCommands" Content="Enable server chat commands ($swa, $cheat, etc.)" Foreground="{StaticResource TextPrimary}" Margin="0,0,0,10" />
+                                <CheckBox x:Name="ChkCfgBotSimulator" Content="Enable AI Bot Bounty Simulator (Auto accept/complete missions)" Foreground="{StaticResource TextPrimary}" Checked="ChkCfgBotSimulator_Checked" Unchecked="ChkCfgBotSimulator_Unchecked" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Buttons -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,30">
+                            <Button x:Name="BtnSaveServerConfig" Content="SAVE SERVER CONFIG" Style="{StaticResource StartButton}" Padding="20,10" Click="BtnSaveServerConfig_Click" Width="200" Margin="0,0,10,0" />
+                            <Button x:Name="BtnReloadServerConfig" Content="RELOAD FROM DISK" Style="{StaticResource ModernButton}" Padding="20,10" Click="BtnReloadServerConfig_Click" Width="200" />
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- SETTINGS TAB -->
+            <TabItem Header="SETTINGS">
+                <ScrollViewer Margin="0,15,0,0" VerticalScrollBarVisibility="Auto">
+                    <StackPanel MaxWidth="800" HorizontalAlignment="Left">
+                        <!-- Newserv Path Configuration -->
+                        <TextBlock Text="NEWSERV CONFIGURATION" FontSize="12" FontWeight="Bold" Foreground="{StaticResource AccentCyan}" Margin="0,0,0,8" />
+                        <Border Background="{StaticResource BgCard}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="6" Padding="15" Margin="0,0,0,20">
+                            <StackPanel>
+                                <Grid Margin="0,5">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" Text="newserv.exe Path:" Foreground="{StaticResource TextSecondary}" Margin="0,0,0,5" />
+                                    <Grid Grid.Row="1">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBox x:Name="TxtSetNewservPath" Grid.Column="0" Background="#121216" Foreground="#FFF" BorderBrush="{StaticResource BorderBrush}" Padding="6,4" />
+                                        <Button x:Name="BtnBrowseNewserv" Grid.Column="1" Content="Browse" Style="{StaticResource ModernButton}" Margin="8,0,0,0" Click="BtnBrowseNewserv_Click" />
+                                    </Grid>
+                                </Grid>
+                                <Grid Margin="0,10,0,5">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" Text="Working Directory:" Foreground="{StaticResource TextSecondary}" Margin="0,0,0,5" />
+                                    <Grid Grid.Row="1">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBox x:Name="TxtSetNewservDir" Grid.Column="0" Background="#121216" Foreground="#FFF" BorderBrush="{StaticResource BorderBrush}" Padding="6,4" />
+                                        <Button x:Name="BtnBrowseNewservDir" Grid.Column="1" Content="Browse" Style="{StaticResource ModernButton}" Margin="8,0,0,0" Click="BtnBrowseNewservDir_Click" />
+                                    </Grid>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- PHP / Website Path Configuration -->
+                        <TextBlock Text="CRON / PHP CONFIGURATION" FontSize="12" FontWeight="Bold" Foreground="{StaticResource AccentCyan}" Margin="0,0,0,8" />
+                        <Border Background="{StaticResource BgCard}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="6" Padding="15" Margin="0,0,0,20">
+                            <StackPanel>
+                                <Grid Margin="0,5">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" Text="php.exe Path:" Foreground="{StaticResource TextSecondary}" Margin="0,0,0,5" />
+                                    <Grid Grid.Row="1">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBox x:Name="TxtSetPhpPath" Grid.Column="0" Background="#121216" Foreground="#FFF" BorderBrush="{StaticResource BorderBrush}" Padding="6,4" />
+                                        <Button x:Name="BtnBrowsePhp" Grid.Column="1" Content="Browse" Style="{StaticResource ModernButton}" Margin="8,0,0,0" Click="BtnBrowsePhp_Click" />
+                                    </Grid>
+                                </Grid>
+                                <Grid Margin="0,10,0,5">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" Text="Website (www) Directory:" Foreground="{StaticResource TextSecondary}" Margin="0,0,0,5" />
+                                    <Grid Grid.Row="1">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBox x:Name="TxtSetWebsitePath" Grid.Column="0" Background="#121216" Foreground="#FFF" BorderBrush="{StaticResource BorderBrush}" Padding="6,4" />
+                                        <Button x:Name="BtnBrowseWebsite" Grid.Column="1" Content="Browse" Style="{StaticResource ModernButton}" Margin="8,0,0,0" Click="BtnBrowseWebsite_Click" />
+                                    </Grid>
+                                </Grid>
+                                <Grid Margin="0,10,0,5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="200" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Cron Interval (Seconds):" Foreground="{StaticResource TextSecondary}" Margin="0,0,0,5" />
+                                        <TextBox x:Name="TxtSetCronInterval" Background="#121216" Foreground="#FFF" BorderBrush="{StaticResource BorderBrush}" Padding="6,4" Width="80" HorizontalAlignment="Left" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Bottom">
+                                        <CheckBox x:Name="ChkRunDirectly" Content="Run PHP scripts directly in background (No CMD window)" Foreground="{StaticResource TextPrimary}" IsChecked="True" />
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Options Configuration -->
+                        <TextBlock Text="LAUNCHER OPTIONS" FontSize="12" FontWeight="Bold" Foreground="{StaticResource AccentCyan}" Margin="0,0,0,8" />
+                        <Border Background="{StaticResource BgCard}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="6" Padding="15" Margin="0,0,0,20">
+                            <StackPanel>
+                                <CheckBox x:Name="ChkAutoStart" Content="Automatically start servers on launcher startup" Foreground="{StaticResource TextPrimary}" Margin="0,0,0,10" />
+                                <CheckBox x:Name="ChkMinimizeToTray" Content="Minimize to System Tray on close" Foreground="{StaticResource TextPrimary}" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Backup Configuration -->
+                        <TextBlock Text="BACKUP CONFIGURATION" FontSize="12" FontWeight="Bold" Foreground="{StaticResource AccentCyan}" Margin="0,0,0,8" />
+                        <Border Background="{StaticResource BgCard}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="6" Padding="15" Margin="0,0,0,20">
+                            <StackPanel>
+                                <CheckBox x:Name="ChkAutoBackupOnStart" Content="Auto-backup characters (.psochar) &amp; database on start" Foreground="{StaticResource TextPrimary}" Margin="0,0,0,10" />
+                                <CheckBox x:Name="ChkAutoBackupOnStop" Content="Auto-backup characters (.psochar) &amp; database on stop" Foreground="{StaticResource TextPrimary}" Margin="0,0,0,10" />
+                                <Grid Margin="0,5,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="Max backups to keep:" Foreground="{StaticResource TextSecondary}" VerticalAlignment="Center" Margin="0,0,10,0" />
+                                    <TextBox x:Name="TxtKeepMaxBackups" Grid.Column="1" Background="#121216" Foreground="#FFF" BorderBrush="{StaticResource BorderBrush}" Padding="6,4" Width="80" HorizontalAlignment="Left" />
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Save Button -->
+                        <Button x:Name="BtnSaveSettings" Content="SAVE CONFIGURATION" Style="{StaticResource StartButton}" Padding="20,10" Click="BtnSaveSettings_Click" Width="220" HorizontalAlignment="Left" Margin="0,0,0,30" />
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+
+        <!-- FOOTER -->
+        <Border Grid.Row="2" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0" Padding="0,10,0,0" Margin="0,10,0,0">
+            <Grid>
+                <TextBlock Text="Pioneer II Server Management System © 2026" Foreground="{StaticResource TextSecondary}" FontSize="11" />
+                <TextBlock x:Name="TxtTrayNotice" Text="Launcher is running in the background. Close window to minimize to tray." Foreground="{StaticResource TextSecondary}" FontSize="11" HorizontalAlignment="Right" Visibility="Collapsed" />
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
