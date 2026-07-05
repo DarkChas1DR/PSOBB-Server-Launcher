@@ -212,6 +212,7 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
                     <!-- NEWSERV CARD -->
@@ -260,7 +261,7 @@
 
                     <!-- PHP CRONS CARD -->
                     <Border x:Name="BorderCrons" Grid.Column="1" Background="{StaticResource BgCard}" BorderBrush="{StaticResource BorderBrush}" 
-                            BorderThickness="1" CornerRadius="8" Margin="10,0,0,0" Padding="20">
+                            BorderThickness="1" CornerRadius="8" Margin="10,0,10,0" Padding="20">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
@@ -301,6 +302,49 @@
                             </Grid>
                         </Grid>
                     </Border>
+
+                    <!-- SERVER STATISTICS CARD -->
+                    <Border x:Name="BorderStats" Grid.Column="2" Background="{StaticResource BgCard}" BorderBrush="{StaticResource BorderBrush}" 
+                            BorderThickness="1" CornerRadius="8" Margin="10,0,0,0" Padding="20">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <!-- Header -->
+                            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,15">
+                                <Ellipse x:Name="IndicatorStats" Width="12" Height="12" Fill="{StaticResource AccentCyan}" Margin="0,0,10,0" />
+                                <TextBlock Text="Server Statistics" FontSize="16" FontWeight="Bold" Foreground="{StaticResource TextPrimary}" />
+                            </StackPanel>
+
+                            <!-- Stats List -->
+                            <StackPanel Grid.Row="1" VerticalAlignment="Top" Margin="0,10">
+                                <Grid Margin="0,5">
+                                    <TextBlock Text="Registered Accounts:" Foreground="{StaticResource TextSecondary}" />
+                                    <TextBlock x:Name="TxtStatsAccounts" Text="0" Foreground="{StaticResource TextPrimary}" FontWeight="Bold" HorizontalAlignment="Right" />
+                                </Grid>
+                                <Grid Margin="0,5">
+                                    <TextBlock Text="Total Characters:" Foreground="{StaticResource TextSecondary}" />
+                                    <TextBlock x:Name="TxtStatsCharacters" Text="0" Foreground="{StaticResource TextPrimary}" FontWeight="Bold" HorizontalAlignment="Right" />
+                                </Grid>
+                                <Grid Margin="0,5">
+                                    <TextBlock Text="Backup Archives:" Foreground="{StaticResource TextSecondary}" />
+                                    <TextBlock x:Name="TxtStatsBackups" Text="0" Foreground="{StaticResource AccentOrange}" FontWeight="Bold" HorizontalAlignment="Right" />
+                                </Grid>
+                                <Grid Margin="0,5">
+                                    <TextBlock Text="Database (SQLite) Size:" Foreground="{StaticResource TextSecondary}" />
+                                    <TextBlock x:Name="TxtStatsDbSize" Text="0 KB" Foreground="{StaticResource TextPrimary}" HorizontalAlignment="Right" />
+                                </Grid>
+                            </StackPanel>
+
+                            <!-- Controls -->
+                            <Grid Grid.Row="2">
+                                <Button x:Name="BtnRefreshStats" Content="Refresh Statistics" Style="{StaticResource ModernButton}" Click="BtnRefreshStats_Click" />
+                            </Grid>
+                        </Grid>
+                    </Border>
                 </Grid>
             </TabItem>
 
@@ -310,6 +354,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
                     <TextBox x:Name="TxtNewservLog" Grid.Row="0" Background="{StaticResource BgConsole}" Foreground="#CCCCCC" 
@@ -318,8 +363,23 @@
                              VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
                              AcceptsReturn="True" TextWrapping="Wrap" Padding="8" />
 
-                    <!-- Log controls -->
+                    <!-- Command Terminal Bar -->
                     <Grid Grid.Row="1" Margin="0,8,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="console>" Foreground="{StaticResource AccentCyan}" FontWeight="Bold" VerticalAlignment="Center" Margin="5,0,10,0" />
+                        <TextBox x:Name="TxtNewservCommand" Grid.Column="1" Background="{StaticResource BgConsole}" Foreground="#FFFFFF" 
+                                 BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="6,4" 
+                                 FontFamily="Consolas" KeyDown="TxtNewservCommand_KeyDown" />
+                        <Button x:Name="BtnSendNewservCommand" Grid.Column="2" Content="Send" Style="{StaticResource ModernButton}" 
+                                Margin="8,0,0,0" Padding="15,4" Click="BtnSendNewservCommand_Click" />
+                    </Grid>
+
+                    <!-- Log controls -->
+                    <Grid Grid.Row="2" Margin="0,8,0,0">
                         <CheckBox x:Name="ChkNewservScroll" Content="Auto-scroll" IsChecked="True" Foreground="{StaticResource TextSecondary}" VerticalAlignment="Center" />
                         <Button x:Name="BtnClearNewservLog" Content="Clear Logs" Style="{StaticResource ModernButton}" HorizontalAlignment="Right" Click="BtnClearNewservLog_Click" Padding="10,5" />
                     </Grid>
@@ -344,6 +404,286 @@
                     <Grid Grid.Row="1" Margin="0,8,0,0">
                         <CheckBox x:Name="ChkCronScroll" Content="Auto-scroll" IsChecked="True" Foreground="{StaticResource TextSecondary}" VerticalAlignment="Center" />
                         <Button x:Name="BtnClearCronLog" Content="Clear Logs" Style="{StaticResource ModernButton}" HorizontalAlignment="Right" Click="BtnClearCronLog_Click" Padding="10,5" />
+                    </Grid>
+                </Grid>
+            </TabItem>
+
+            <!-- BACKUPS TAB -->
+            <TabItem Header="BACKUPS">
+                <Grid Margin="0,15,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="220" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Backup List -->
+                    <Border Grid.Column="0" Background="{StaticResource BgCard}" BorderBrush="{StaticResource BorderBrush}" 
+                            BorderThickness="1" CornerRadius="8" Padding="15" Margin="0,0,15,0">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            
+                            <TextBlock Grid.Row="0" Text="AVAILABLE BACKUP ARCHIVES" FontSize="12" FontWeight="Bold" Foreground="{StaticResource AccentCyan}" Margin="0,0,0,10" />
+                            
+                            <ListView x:Name="LstBackups" Grid.Row="1" Background="{StaticResource BgConsole}" Foreground="#CCCCCC" 
+                                      BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" 
+                                      FontFamily="Segoe UI" FontSize="13" Padding="5">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="Filename" DisplayMemberBinding="{Binding Filename}" Width="280" />
+                                        <GridViewColumn Header="Date Created" DisplayMemberBinding="{Binding DateCreated}" Width="150" />
+                                        <GridViewColumn Header="Size" DisplayMemberBinding="{Binding Size}" Width="100" />
+                                    </GridView>
+                                </ListView.View>
+                                <ListView.ItemContainerStyle>
+                                    <Style TargetType="ListViewItem">
+                                        <Setter Property="Background" Value="Transparent" />
+                                        <Setter Property="Foreground" Value="#CCCCCC" />
+                                        <Setter Property="BorderThickness" Value="0,0,0,1" />
+                                        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+                                        <Setter Property="Padding" Value="6" />
+                                        <Style.Triggers>
+                                            <Trigger Property="IsSelected" Value="true">
+                                                <Setter Property="Background" Value="#2A2A38" />
+                                                <Setter Property="Foreground" Value="#FFFFFF" />
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ListView.ItemContainerStyle>
+                            </ListView>
+                        </Grid>
+                    </Border>
+
+                    <!-- Backup Action Buttons -->
+                    <StackPanel Grid.Column="1" VerticalAlignment="Top">
+                        <TextBlock Text="BACKUP ACTIONS" FontSize="12" FontWeight="Bold" Foreground="{StaticResource AccentCyan}" Margin="0,0,0,10" />
+                        
+                        <Button x:Name="BtnCreateBackupTab" Content="Create New Backup" Style="{StaticResource StartButton}" Padding="15,10" Margin="0,0,0,12" Click="BtnCreateBackupTab_Click" />
+                        <Button x:Name="BtnRestoreBackup" Content="Restore Selected Backup" Style="{StaticResource ModernButton}" BorderBrush="{StaticResource AccentOrange}" Foreground="{StaticResource AccentOrange}" Padding="15,10" Margin="0,0,0,12" Click="BtnRestoreBackup_Click" />
+                        <Button x:Name="BtnDeleteBackup" Content="Delete Selected Backup" Style="{StaticResource StopButton}" Padding="15,10" Margin="0,0,0,12" Click="BtnDeleteBackup_Click" />
+                        <Button x:Name="BtnOpenBackupsFolder" Content="Open Backups Folder" Style="{StaticResource ModernButton}" Padding="15,10" Click="BtnOpenBackupsFolder_Click" />
+                        
+                        <TextBlock Text="Note: Restoring a backup will overwrite character data, system accounts, and database. Running services will be stopped during restoration." 
+                                   Foreground="{StaticResource TextSecondary}" FontSize="11" TextWrapping="Wrap" Margin="0,20,0,0" LineHeight="15" />
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
+            <!-- CRON CONFIG TAB -->
+            <TabItem Header="CRON CONFIG">
+                <Grid Margin="0,15,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="280" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Crons List -->
+                    <Border Grid.Column="0" Background="{StaticResource BgCard}" BorderBrush="{StaticResource BorderBrush}" 
+                            BorderThickness="1" CornerRadius="8" Padding="15" Margin="0,0,15,0">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            
+                            <TextBlock Grid.Row="0" Text="CONFIGURED CRON TASKS" FontSize="12" FontWeight="Bold" Foreground="{StaticResource AccentCyan}" Margin="0,0,0,10" />
+                            
+                            <ListView x:Name="LstCronTasks" Grid.Row="1" Background="{StaticResource BgConsole}" Foreground="#CCCCCC" 
+                                      BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" 
+                                      FontFamily="Segoe UI" FontSize="13" Padding="5" SelectionChanged="LstCronTasks_SelectionChanged">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="Act" Width="40">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <CheckBox IsChecked="{Binding Enabled}" Click="ChkCronEnabled_Click" HorizontalAlignment="Center" />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="150" />
+                                        <GridViewColumn Header="Script Path" DisplayMemberBinding="{Binding ScriptPath}" Width="250" />
+                                        <GridViewColumn Header="Interval" DisplayMemberBinding="{Binding IntervalSeconds}" Width="70" />
+                                    </GridView>
+                                </ListView.View>
+                                <ListView.ItemContainerStyle>
+                                    <Style TargetType="ListViewItem">
+                                        <Setter Property="Background" Value="Transparent" />
+                                        <Setter Property="Foreground" Value="#CCCCCC" />
+                                        <Setter Property="BorderThickness" Value="0,0,0,1" />
+                                        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+                                        <Setter Property="Padding" Value="6" />
+                                        <Style.Triggers>
+                                            <Trigger Property="IsSelected" Value="true">
+                                                <Setter Property="Background" Value="#2A2A38" />
+                                                <Setter Property="Foreground" Value="#FFFFFF" />
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ListView.ItemContainerStyle>
+                            </ListView>
+                        </Grid>
+                    </Border>
+
+                    <!-- Edit/Add Panel -->
+                    <Border Grid.Column="1" Background="{StaticResource BgCard}" BorderBrush="{StaticResource BorderBrush}" 
+                            BorderThickness="1" CornerRadius="8" Padding="15">
+                        <StackPanel>
+                            <TextBlock x:Name="TxtCronEditorTitle" Text="ADD / EDIT CRON TASK" FontSize="12" FontWeight="Bold" Foreground="{StaticResource AccentCyan}" Margin="0,0,0,15" />
+                            
+                            <Grid Margin="0,0,0,10">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" Text="Task Name:" Foreground="{StaticResource TextSecondary}" Margin="0,0,0,5" />
+                                <TextBox x:Name="TxtCronName" Grid.Row="1" Background="#121216" Foreground="#FFF" BorderBrush="{StaticResource BorderBrush}" Padding="6,4" />
+                            </Grid>
+
+                            <Grid Margin="0,0,0,10">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" Text="Script Path (rel to website):" Foreground="{StaticResource TextSecondary}" Margin="0,0,0,5" />
+                                <TextBox x:Name="TxtCronScriptPath" Grid.Row="1" Background="#121216" Foreground="#FFF" BorderBrush="{StaticResource BorderBrush}" Padding="6,4" ToolTip="Example: api/cron_boss_tracker.php" />
+                            </Grid>
+
+                            <Grid Margin="0,0,0,15">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" Text="Interval (Seconds):" Foreground="{StaticResource TextSecondary}" Margin="0,0,0,5" />
+                                <TextBox x:Name="TxtCronIntervalSec" Grid.Row="1" Background="#121216" Foreground="#FFF" BorderBrush="{StaticResource BorderBrush}" Padding="6,4" Width="100" HorizontalAlignment="Left" />
+                            </Grid>
+
+                            <CheckBox x:Name="ChkCronTaskEnabled" Content="Task Enabled" Foreground="{StaticResource TextPrimary}" Margin="0,0,0,20" IsChecked="True" />
+
+                            <Button x:Name="BtnSaveCronTask" Content="SAVE TASK" Style="{StaticResource StartButton}" Padding="15,8" Margin="0,0,0,10" Click="BtnSaveCronTask_Click" />
+                            <Button x:Name="BtnDeleteCronTask" Content="DELETE TASK" Style="{StaticResource StopButton}" Padding="15,8" Margin="0,0,0,10" Click="BtnDeleteCronTask_Click" />
+                            <Button x:Name="BtnCancelCronEdit" Content="CLEAR FIELDS" Style="{StaticResource ModernButton}" Padding="15,8" Margin="0,0,0,20" Click="BtnCancelCronEdit_Click" />
+                            
+                            <Button x:Name="BtnResetCronsDefault" Content="RESET TO PSOBB DEFAULTS" Style="{StaticResource ModernButton}" BorderBrush="{StaticResource AccentOrange}" Foreground="{StaticResource AccentOrange}" Padding="15,8" Click="BtnResetCronsDefault_Click" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </TabItem>
+
+            <!-- QUEST MANAGER TAB -->
+            <TabItem Header="QUEST MANAGER">
+                <Grid Margin="0,15,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="260" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Quest Categories list -->
+                    <Border Grid.Column="0" Background="{StaticResource BgCard}" BorderBrush="{StaticResource BorderBrush}" 
+                            BorderThickness="1" CornerRadius="8" Padding="15" Margin="0,0,15,0">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            
+                            <TextBlock Grid.Row="0" Text="QUEST CATEGORIES" FontSize="12" FontWeight="Bold" Foreground="{StaticResource AccentCyan}" Margin="0,0,0,10" />
+                            
+                            <ListBox x:Name="LstQuestCategories" Grid.Row="1" Background="{StaticResource BgConsole}" Foreground="#CCCCCC" 
+                                     BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" 
+                                     FontFamily="Segoe UI" FontSize="13" Padding="5" SelectionChanged="LstQuestCategories_SelectionChanged" />
+                        </Grid>
+                    </Border>
+
+                    <!-- Quests in Category -->
+                    <Grid Grid.Column="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="180" />
+                        </Grid.RowDefinitions>
+
+                        <!-- Quests List -->
+                        <Border Grid.Row="0" Background="{StaticResource BgCard}" BorderBrush="{StaticResource BorderBrush}" 
+                                BorderThickness="1" CornerRadius="8" Padding="15" Margin="0,0,0,15">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                
+                                <TextBlock Grid.Row="0" x:Name="TxtQuestsHeader" Text="QUESTS IN SELECTED CATEGORY" FontSize="12" FontWeight="Bold" Foreground="{StaticResource AccentCyan}" Margin="0,0,0,10" />
+                                
+                                <ListView x:Name="LstQuests" Grid.Row="1" Background="{StaticResource BgConsole}" Foreground="#CCCCCC" 
+                                          BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" 
+                                          FontFamily="Segoe UI" FontSize="13" Padding="5" SelectionChanged="LstQuests_SelectionChanged">
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Header="Act" Width="40">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <CheckBox IsChecked="{Binding Enabled}" Click="ChkQuestEnabled_Click" HorizontalAlignment="Center" />
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Header="Quest ID" DisplayMemberBinding="{Binding BaseName}" Width="120" />
+                                            <GridViewColumn Header="Type" DisplayMemberBinding="{Binding Extension}" Width="60" />
+                                            <GridViewColumn Header="Has Config" DisplayMemberBinding="{Binding HasConfig}" Width="80" />
+                                            <GridViewColumn Header="Last Modified" DisplayMemberBinding="{Binding LastModified}" Width="150" />
+                                        </GridView>
+                                    </ListView.View>
+                                    <ListView.ItemContainerStyle>
+                                        <Style TargetType="ListViewItem">
+                                            <Setter Property="Background" Value="Transparent" />
+                                            <Setter Property="Foreground" Value="#CCCCCC" />
+                                            <Setter Property="BorderThickness" Value="0,0,0,1" />
+                                            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+                                            <Setter Property="Padding" Value="6" />
+                                            <Style.Triggers>
+                                                <Trigger Property="IsSelected" Value="true">
+                                                    <Setter Property="Background" Value="#2A2A38" />
+                                                    <Setter Property="Foreground" Value="#FFFFFF" />
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ListView.ItemContainerStyle>
+                                </ListView>
+                            </Grid>
+                        </Border>
+
+                        <!-- Quest Details & Editing Panel -->
+                        <Border Grid.Row="1" Background="{StaticResource BgCard}" BorderBrush="{StaticResource BorderBrush}" 
+                                BorderThickness="1" CornerRadius="8" Padding="15">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="220" />
+                                </Grid.ColumnDefinitions>
+                                
+                                <!-- Quest Config / AvailableIf editor -->
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="QUEST CONFIGURATION (METADATA)" FontSize="12" FontWeight="Bold" Foreground="{StaticResource AccentCyan}" Margin="0,0,0,10" />
+                                    
+                                    <Grid Margin="0,5">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="180" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="Availability flag (AvailableIf):" Foreground="{StaticResource TextSecondary}" VerticalAlignment="Center" />
+                                        <TextBox x:Name="TxtQuestAvailableIf" Grid.Column="1" Background="#121216" Foreground="#FFF" BorderBrush="{StaticResource BorderBrush}" Padding="6,4" Width="150" HorizontalAlignment="Left" ToolTip="Flag required to unlock this quest (e.g. F_01F5)" />
+                                    </Grid>
+                                    
+                                    <Button x:Name="BtnSaveQuestConfig" Content="Save Quest Config" Style="{StaticResource StartButton}" Padding="15,6" Margin="0,10,0,0" Width="160" HorizontalAlignment="Left" Click="BtnSaveQuestConfig_Click" />
+                                </StackPanel>
+
+                                <!-- Quest Actions -->
+                                <StackPanel Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Right">
+                                    <TextBlock Text="QUEST ACTIONS" FontSize="12" FontWeight="Bold" Foreground="{StaticResource AccentCyan}" Margin="0,0,0,10" />
+                                    <Button x:Name="BtnUploadQuest" Content="Upload Custom Quest" Style="{StaticResource ModernButton}" Padding="15,6" Margin="0,0,0,10" Click="BtnUploadQuest_Click" />
+                                    <Button x:Name="BtnOpenQuestsDir" Content="Open Quests Directory" Style="{StaticResource ModernButton}" Padding="15,6" Click="BtnOpenQuestsDir_Click" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
                     </Grid>
                 </Grid>
             </TabItem>
@@ -429,6 +769,127 @@
                                 <CheckBox x:Name="ChkCfgAllowConcurrent" Content="Allow concurrent logins on the same account" Foreground="{StaticResource TextPrimary}" Margin="0,0,0,10" />
                                 <CheckBox x:Name="ChkCfgChatCommands" Content="Enable server chat commands ($swa, $cheat, etc.)" Foreground="{StaticResource TextPrimary}" Margin="0,0,0,10" />
                                 <CheckBox x:Name="ChkCfgBotSimulator" Content="Enable AI Bot Bounty Simulator (Auto accept/complete missions)" Foreground="{StaticResource TextPrimary}" Checked="ChkCfgBotSimulator_Checked" Unchecked="ChkCfgBotSimulator_Unchecked" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Lobby Event Scheduler -->
+                        <TextBlock Text="LOBBY EVENT &amp; MENU THEME SCHEDULER" FontSize="12" FontWeight="Bold" Foreground="{StaticResource AccentCyan}" Margin="0,0,0,8" />
+                        <Border Background="{StaticResource BgCard}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="6" Padding="15" Margin="0,0,0,20">
+                            <StackPanel>
+                                <Grid Margin="0,5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="200" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                                        <TextBlock Text="Lobby Holiday Event:" Foreground="{StaticResource TextSecondary}" Margin="0,0,0,5" />
+                                        <ComboBox x:Name="CboCfgLobbyEvent" Background="#121216" Foreground="#FFF" BorderBrush="{StaticResource BorderBrush}" Padding="6,4">
+                                            <ComboBoxItem Content="none" />
+                                            <ComboBoxItem Content="xmas" />
+                                            <ComboBoxItem Content="val" />
+                                            <ComboBoxItem Content="easter" />
+                                            <ComboBoxItem Content="hallo" />
+                                            <ComboBoxItem Content="sonic" />
+                                            <ComboBoxItem Content="newyear" />
+                                            <ComboBoxItem Content="bval" />
+                                            <ComboBoxItem Content="wedding" />
+                                            <ComboBoxItem Content="spring" />
+                                            <ComboBoxItem Content="s-spring" />
+                                            <ComboBoxItem Content="summer" />
+                                            <ComboBoxItem Content="s-summer" />
+                                            <ComboBoxItem Content="fall" />
+                                        </ComboBox>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Bottom" Margin="20,0,0,0">
+                                        <CheckBox x:Name="ChkCfgAutoLobbyEvent" Content="Automatically schedule events based on system calendar date" Foreground="{StaticResource TextPrimary}" Margin="0,0,0,10" Click="ChkCfgAutoLobbyEvent_Click" />
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Hourly Events & Global Boosters -->
+                        <TextBlock Text="HOURLY EVENTS &amp; GLOBAL BOOSTERS" FontSize="12" FontWeight="Bold" Foreground="{StaticResource AccentCyan}" Margin="0,0,0,8" />
+                        <Border Background="{StaticResource BgCard}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="6" Padding="15" Margin="0,0,0,20">
+                            <StackPanel>
+                                <Grid Margin="0,5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                                        <TextBlock Text="Global EXP Multiplier:" Foreground="{StaticResource TextSecondary}" Margin="0,0,0,5" />
+                                        <TextBox x:Name="TxtCfgGlobalExpMult" Background="#121216" Foreground="#FFF" BorderBrush="{StaticResource BorderBrush}" Padding="6,4" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Margin="5,0,5,0">
+                                        <TextBlock Text="EXP Share Multiplier:" Foreground="{StaticResource TextSecondary}" Margin="0,0,0,5" />
+                                        <TextBox x:Name="TxtCfgExpShareMult" Background="#121216" Foreground="#FFF" BorderBrush="{StaticResource BorderBrush}" Padding="6,4" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Margin="10,0,0,0">
+                                        <TextBlock Text="Global Drop Rate Mult:" Foreground="{StaticResource TextSecondary}" Margin="0,0,0,5" />
+                                        <TextBox x:Name="TxtCfgGlobalDropMult" Background="#121216" Foreground="#FFF" BorderBrush="{StaticResource BorderBrush}" Padding="6,4" />
+                                    </StackPanel>
+                                </Grid>
+
+                                <Grid Margin="0,15,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <!-- Happy Hour -->
+                                    <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                                        <CheckBox x:Name="ChkCfgHappyHourEnabled" Content="Enable Happy Hour" Foreground="{StaticResource TextPrimary}" Margin="0,0,0,10" />
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0" Margin="0,0,5,0">
+                                                <TextBlock Text="Min Drop Mult:" Foreground="{StaticResource TextSecondary}" FontSize="11" Margin="0,0,0,3" />
+                                                <TextBox x:Name="TxtCfgHappyHourMin" Background="#121216" Foreground="#FFF" BorderBrush="{StaticResource BorderBrush}" Padding="4" />
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1" Margin="5,0,0,0">
+                                                <TextBlock Text="Max Drop Mult:" Foreground="{StaticResource TextSecondary}" FontSize="11" Margin="0,0,0,3" />
+                                                <TextBox x:Name="TxtCfgHappyHourMax" Background="#121216" Foreground="#FFF" BorderBrush="{StaticResource BorderBrush}" Padding="4" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </StackPanel>
+
+                                    <!-- Party Hour -->
+                                    <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                                        <CheckBox x:Name="ChkCfgPartyHourEnabled" Content="Enable Party Hour" Foreground="{StaticResource TextPrimary}" Margin="0,0,0,10" />
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0" Margin="0,0,5,0">
+                                                <TextBlock Text="Min EXP Mult:" Foreground="{StaticResource TextSecondary}" FontSize="11" Margin="0,0,0,3" />
+                                                <TextBox x:Name="TxtCfgPartyHourMin" Background="#121216" Foreground="#FFF" BorderBrush="{StaticResource BorderBrush}" Padding="4" />
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1" Margin="5,0,0,0">
+                                                <TextBlock Text="Max EXP Mult:" Foreground="{StaticResource TextSecondary}" FontSize="11" Margin="0,0,0,3" />
+                                                <TextBox x:Name="TxtCfgPartyHourMax" Background="#121216" Foreground="#FFF" BorderBrush="{StaticResource BorderBrush}" Padding="4" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </StackPanel>
+                                </Grid>
+
+                                <Grid Margin="0,15,0,5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                                        <TextBlock Text="Event Loop Interval (Seconds):" Foreground="{StaticResource TextSecondary}" Margin="0,0,0,5" />
+                                        <TextBox x:Name="TxtCfgEventInterval" Background="#121216" Foreground="#FFF" BorderBrush="{StaticResource BorderBrush}" Padding="6,4" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                                        <TextBlock Text="Event Loop Duration (Seconds):" Foreground="{StaticResource TextSecondary}" Margin="0,0,0,5" />
+                                        <TextBox x:Name="TxtCfgEventDuration" Background="#121216" Foreground="#FFF" BorderBrush="{StaticResource BorderBrush}" Padding="6,4" />
+                                    </StackPanel>
+                                </Grid>
                             </StackPanel>
                         </Border>
 

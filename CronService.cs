@@ -13,6 +13,7 @@ namespace Launcher
         private Task? _loopTask;
         private ProcessService? _batchProcessService;
         private bool _isRunning = false;
+        private readonly System.Collections.Generic.Dictionary<string, DateTime> _lastRunTimes = new System.Collections.Generic.Dictionary<string, DateTime>();
 
         public event Action<string>? OnOutputReceived;
         public event Action<bool>? OnStatusChanged; // True = Running, False = Stopped
@@ -38,6 +39,7 @@ namespace Launcher
             if (_settings.RunCronsDirectly)
             {
                 Log("[CRON] Starting crons in direct C# execution mode...");
+                _lastRunTimes.Clear();
                 _cts = new CancellationTokenSource();
                 _loopTask = Task.Run(() => CronLoop(_cts.Token));
             }
@@ -125,29 +127,47 @@ namespace Launcher
                 try
                 {
                     string time = DateTime.Now.ToString("HH:mm:ss");
-                    Log($"[{time}] [Tracker] Starting Boss and Floor Tracker...");
-                    var t1 = RunPhpScriptAsync("api/cron_boss_tracker.php", token);
+                    var tasks = new System.Collections.Generic.List<Task>();
 
-                    Log($"[{time}] [Missions] Starting Mission and Achievement Processor...");
-                    var t2 = RunPhpScriptAsync("api/cron_missions.php", token);
-
-                    Log($"[{time}] [Community] Starting Community Event Processor...");
-                    var t3 = RunPhpScriptAsync("api/cron_community.php", token);
-
-                    Log($"[{time}] [Bots] Starting AI Bot Simulator...");
-                    var t4 = RunPhpScriptAsync("api/cron_bots.php", token);
-
-                    // Wait for all to finish, up to a timeout of 10s
-                    var allTasks = Task.WhenAll(t1, t2, t3, t4);
-                    var delayTask = Task.Delay(10000, token);
-                    var completedTask = await Task.WhenAny(allTasks, delayTask);
-                    
-                    if (completedTask == delayTask && !allTasks.IsCompleted)
+                    // Create a local copy to prevent thread modification exceptions
+                    var tasksToRun = new System.Collections.Generic.List<CronTaskSettings>();
+                    lock (_settings.CronTasks)
                     {
-                        Log("[CRON WARNING] Some scripts took longer than 10 seconds to execute.");
+                        tasksToRun.AddRange(_settings.CronTasks);
                     }
 
-                    Log($"[{time}] Daemons finished. Sleeping {_settings.CronIntervalSeconds} seconds...\n");
+                    foreach (var task in tasksToRun)
+                    {
+                        if (!task.Enabled) continue;
+
+                        string path = task.ScriptPath;
+                        if (string.IsNullOrWhiteSpace(path)) continue;
+
+                        if (!_lastRunTimes.TryGetValue(path, out DateTime lastRun))
+                        {
+                            lastRun = DateTime.MinValue;
+                        }
+
+                        if ((DateTime.Now - lastRun).TotalSeconds >= task.IntervalSeconds)
+                        {
+                            _lastRunTimes[path] = DateTime.Now;
+                            Log($"[{time}] [{task.Name}] Starting script: {path}...");
+                            tasks.Add(RunPhpScriptAsync(path, token));
+                        }
+                    }
+
+                    if (tasks.Count > 0)
+                    {
+                        // Wait for all to finish, up to a timeout of 10s
+                        var allTasks = Task.WhenAll(tasks);
+                        var delayTask = Task.Delay(10000, token);
+                        var completedTask = await Task.WhenAny(allTasks, delayTask);
+                        
+                        if (completedTask == delayTask && !allTasks.IsCompleted)
+                        {
+                            Log("[CRON WARNING] Some scripts took longer than 10 seconds to execute.");
+                        }
+                    }
                 }
                 catch (OperationCanceledException)
                 {
@@ -160,7 +180,7 @@ namespace Launcher
 
                 try
                 {
-                    await Task.Delay(TimeSpan.FromSeconds(_settings.CronIntervalSeconds), token);
+                    await Task.Delay(1000, token);
                 }
                 catch (OperationCanceledException)
                 {

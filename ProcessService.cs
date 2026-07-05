@@ -59,6 +59,7 @@ namespace Launcher
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
+                    RedirectStandardInput = true,
                     CreateNoWindow = true,
                     StandardOutputEncoding = System.Text.Encoding.UTF8,
                     StandardErrorEncoding = System.Text.Encoding.UTF8
@@ -88,6 +89,21 @@ namespace Launcher
                 Log($"[{_name}] Error during start: {ex.Message}");
                 _process = null;
                 OnStatusChanged?.Invoke(false);
+            }
+        }
+
+        public void SendCommand(string command)
+        {
+            if (IsRunning && _process != null && _process.StartInfo.RedirectStandardInput)
+            {
+                try
+                {
+                    _process.StandardInput.WriteLine(command);
+                }
+                catch (Exception ex)
+                {
+                    Log($"[{_name}] Error sending command: {ex.Message}");
+                }
             }
         }
 

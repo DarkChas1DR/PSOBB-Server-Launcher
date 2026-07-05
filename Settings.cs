@@ -17,6 +17,27 @@ namespace Launcher
         public bool AutoBackupOnStart { get; set; } = true;
         public bool AutoBackupOnStop { get; set; } = false;
         public int KeepMaxBackups { get; set; } = 10;
+        public bool AutoScheduleLobbyEvents { get; set; } = false;
+        public string SelectedLobbyEvent { get; set; } = "none";
+        public System.Collections.Generic.List<CronTaskSettings> CronTasks { get; set; } = new System.Collections.Generic.List<CronTaskSettings>();
+
+        public LauncherSettings()
+        {
+            CronTasks = GetDefaultCronTasks();
+        }
+
+        public static System.Collections.Generic.List<CronTaskSettings> GetDefaultCronTasks()
+        {
+            return new System.Collections.Generic.List<CronTaskSettings>
+            {
+                new CronTaskSettings { Name = "Boss & Floor Tracker", ScriptPath = "api/cron_boss_tracker.php", IntervalSeconds = 5, Enabled = true },
+                new CronTaskSettings { Name = "Missions & Achievements", ScriptPath = "api/cron_missions.php", IntervalSeconds = 5, Enabled = true },
+                new CronTaskSettings { Name = "Community Events", ScriptPath = "api/cron_community.php", IntervalSeconds = 5, Enabled = true },
+                new CronTaskSettings { Name = "AI Bot Simulator", ScriptPath = "api/cron_bots.php", IntervalSeconds = 5, Enabled = true },
+                new CronTaskSettings { Name = "Leaderboard Compiler", ScriptPath = "api/cron_leaderboards.php", IntervalSeconds = 300, Enabled = true },
+                new CronTaskSettings { Name = "Achievement Scanner", ScriptPath = "api/cron_achievements.php", IntervalSeconds = 300, Enabled = true }
+            };
+        }
 
         private static readonly string SettingsFileName = "launcher_settings.json";
 
@@ -36,6 +57,10 @@ namespace Launcher
                     var settings = JsonSerializer.Deserialize<LauncherSettings>(json);
                     if (settings != null)
                     {
+                        if (settings.CronTasks == null || settings.CronTasks.Count == 0)
+                        {
+                            settings.CronTasks = GetDefaultCronTasks();
+                        }
                         return settings;
                     }
                 }
@@ -186,5 +211,13 @@ namespace Launcher
             catch { }
             return null;
         }
+    }
+
+    public class CronTaskSettings
+    {
+        public string Name { get; set; } = "";
+        public string ScriptPath { get; set; } = "";
+        public int IntervalSeconds { get; set; } = 5;
+        public bool Enabled { get; set; } = true;
     }
 }
